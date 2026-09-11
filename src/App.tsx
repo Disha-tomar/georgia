@@ -11,6 +11,8 @@ import { Icon } from './components/StopIcon';
 import { AltitudeProfile } from './components/AltitudeProfile';
 import { StopCard } from './components/StopCard';
 import { TripMap } from './components/TripMap';
+import { OfflineMapManager } from './components/OfflineMapManager';
+import { useInstallPrompt } from './hooks/useInstallPrompt';
 
 type Tab = 'days' | 'map' | 'food' | 'settings';
 
@@ -312,6 +314,7 @@ function Settings({ geo, wake, weather }: {
   wake: ReturnType<typeof useWakeLock>;
   weather: ReturnType<typeof useWeather>;
 }) {
+  const install = useInstallPrompt();
   return (
     <div className="settings">
       <div className="slab" style={{ margin: '16px 14px 6px' }}>On the road</div>
@@ -370,13 +373,23 @@ function Settings({ geo, wake, weather }: {
           onClick={() => weather.refresh()} disabled={weather.loading}>Refresh</button>
       </div>
 
-      <div className="slab" style={{ margin: '20px 14px 6px' }}>Offline map</div>
+      <div className="slab" style={{ margin: '20px 14px 6px' }}>Offline</div>
+      <OfflineMapManager />
+
       <div className="setrow">
         <div>
-          <b>Georgia basemap</b>
-          <small>64 MB · streaming from the server for now. The one-tap download
-            for full offline use arrives with the service worker.</small>
+          <b>Install on this phone</b>
+          <small>
+            {install.installed ? 'Installed — you are running it as an app.'
+              : install.canInstall ? 'Adds it to your home screen and runs it full screen.'
+              : install.isIOS ? 'On iPhone: tap Share, then "Add to Home Screen".'
+              : 'Your browser will offer this once the app has been visited a couple of times.'}
+          </small>
         </div>
+        {install.canInstall && (
+          <button className="btn p" style={{ flex: 'none', minWidth: 0, padding: '0 14px' }}
+            onClick={install.install}>Install</button>
+        )}
       </div>
 
       <p className="setnote">
