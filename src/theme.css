@@ -102,11 +102,18 @@ img { display: block; max-width: 100%; }
 :root[data-theme="dark"] .grain { mix-blend-mode: screen; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .grain { mix-blend-mode: screen; } }
 
-/* device frame on desktop, full bleed on phone */
-.stage { min-height: 100dvh; display: flex; align-items: center; justify-content: center; }
+/* device frame on desktop, full bleed on phone.
+   The stage is exactly one viewport tall and the phone fills it, so the
+   column is bounded: .scroll is the only scroller and the tab bar stays
+   pinned to the bottom no matter how long the day is. */
+.stage {
+  height: 100vh; height: 100dvh; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
 .phone {
-  width: 100%; max-width: 100%; background: var(--paper); position: relative;
-  overflow: hidden; min-height: 100dvh; display: flex; flex-direction: column;
+  width: 100%; max-width: 100%; height: 100%;
+  background: var(--paper); position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
 }
 @media (min-width: 600px) {
   .stage {
@@ -116,12 +123,15 @@ img { display: block; max-width: 100%; }
       var(--paper-3);
   }
   .phone {
-    max-width: 412px; min-height: 840px; max-height: 94dvh; border-radius: 38px;
+    max-width: 412px; max-height: 880px; border-radius: 38px;
     box-shadow: var(--shadow-lg), 0 0 0 10px var(--frame), 0 0 0 11px var(--frame-hi);
   }
 }
-.scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(26px + env(safe-area-inset-bottom)); }
+/* min-height:0 lets this shrink inside the flex column instead of pushing
+   the tab bar off-screen */
+.scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; padding-bottom: 26px; }
+.tabbar { flex: none; }
 
 /* ═════════ header ═════════ */
 .topbar { position: sticky; top: 0; z-index: 30; background: var(--paper);
