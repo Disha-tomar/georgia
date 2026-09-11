@@ -1,13 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DAYS } from './data/itinerary';
-import { elevationOf, fmtAlt, currentDayNumber, scheduledStopIndex } from './lib/stops';
+import { elevationOf, fmtAlt, currentDayNumber } from './lib/stops';
 import { useTripProgress } from './hooks/useTripProgress';
+import { useGeolocation } from './hooks/useGeolocation';
+import { useWeather } from './hooks/useWeather';
+import { useWakeLock } from './hooks/useWakeLock';
+import { computeNow, fmtKm } from './lib/nowContext';
+import { freshness } from './lib/weather';
 import { Icon } from './components/StopIcon';
 import { AltitudeProfile } from './components/AltitudeProfile';
 import { StopCard } from './components/StopCard';
 import { TripMap } from './components/TripMap';
 
 type Tab = 'days' | 'map' | 'food' | 'settings';
+
+const TOTAL_STOPS = DAYS.reduce((a, d) => a + d.stops.length, 0);
 
 /**
  * Deep link state in the hash: #/day/3/map
@@ -32,6 +39,10 @@ export default function App() {
   const toastTimer = useRef<number | undefined>(undefined);
 
   const { visited, checked, toggleVisited, toggleChecked } = useTripProgress();
+  const geo = useGeolocation();
+  const weather = useWeather();
+  const wake = useWakeLock();
+  const [follow, setFollow] = useState(true);
   const day = DAYS[dayN - 1];
 
   useEffect(() => {
@@ -61,14 +72,21 @@ export default function App() {
     toastTimer.current = window.setTimeout(() => setToast(''), 2600);
   }, []);
 
-  /* Where the schedule says you are. Only meaningful on the actual day —
-     otherwise the rail highlights nothing rather than lying about it. */
-  const nowIdx = useMemo(
-    () => (tripDay === dayN ? scheduledStopIndex(day.stops, clock) : -1),
-    [tripDay, dayN, day.stops, clock],
+  /*
+   * With a GPS fix we report where you actually are, on any day — useful for
+   * checking tomorrow's route while sitting in tonight's hotel. Without one we
+   * fall back to the clock, and only on the real trip day, so the rail never
+   * claims a position it cannot know.
+   */
+  const usableFix = geo.status === 'live' && !geo.stale ? geo.fix : null;
+  const nowCtx = useMemo(
+    () => (usableFix || tripDay === dayN ? computeNow(day, usableFix, clock) : null),
+    [usableFix, tripDay, dayN, day, clock],
   );
+  const nowIdx = nowCtx?.atIndex ?? -1;
   const nowStop = nowIdx >= 0 ? day.stops[nowIdx] : null;
-  const nextStop = nowIdx >= 0 ? day.stops[nowIdx + 1] : null;
+  const nextStop = nowCtx?.next ?? null;
+  const activeId = nowStop?.id ?? nowCtx?.nearest?.id ?? null;
 
   const goDay = (n: number) => {
     setDayN(n);
@@ -128,8 +146,12 @@ export default function App() {
             <TripMap
               day={day}
               stops={day.stops}
-              activeId={nowStop?.id ?? null}
+              activeId={activeId}
               visited={visited}
+              fix={geo.fix}
+              stale={geo.stale}
+              follow={follow}
+              onFollowChange={setFollow}
               onPick={id => {
                 const s = day.stops.find(x => x.id === id);
                 if (s) showToast(`${s.time} · ${s.title}`);
@@ -139,31 +161,59 @@ export default function App() {
           <div className="scroll" ref={scrollRef}>
             {tab === 'days' ? (
               <>
-                <section className="nowbar">
+                <section className="nowbar" data-src={nowCtx?.source}>
                   <div className="nowtop">
-                    <span className="pulse" />
-                    <span className="lab">{nowStop ? 'Now' : 'Plan'}</span>
+                    <span className="pulse" data-gps={nowCtx?.source === 'gps' ? '1' : undefined} />
+                    <span className="lab">
+                      {nowCtx?.source === 'gps' ? 'Now · GPS' : nowCtx ? 'Now · by schedule' : 'Plan'}
+                    </span>
                     <span className="clock">
                       {clock.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
+
                   <div className="nowmain">
                     <span className="car"><Icon kind="car" /></span>
                     <div className="nowtext">
-                      <div className="at">{nowStop ? nowStop.title : `${day.from} → ${day.to}`}</div>
+                      <div className="at">
+                        {nowStop ? nowStop.title
+                          : nowCtx?.source === 'gps'
+                            ? (nowCtx.offRoute ? 'Off route' : 'En route')
+                            : `${day.from} → ${day.to}`}
+                      </div>
                       <div className="nx">
                         {nextStop ? (
                           <>Next <b>{nextStop.title}</b>
-                            {nextStop.drive && <> · {nextStop.drive.mins} min · {nextStop.drive.km} km</>}
+                            {nowCtx?.kmToNext !== null && nowCtx?.kmToNext !== undefined
+                              ? <> · {fmtKm(nowCtx.kmToNext)} away</>
+                              : nextStop.drive && <> · {nextStop.drive.mins} min · {nextStop.drive.km} km</>}
                             {' · arrive '}{nextStop.time}</>
                         ) : nowStop ? (
                           <>Final stop of the day — {nowStop.kicker}</>
+                        ) : nowCtx?.nearest && nowCtx.kmToNearest !== null ? (
+                          <>Nearest <b>{nowCtx.nearest.title}</b> · {fmtKm(nowCtx.kmToNearest)}</>
                         ) : (
                           <>{day.stops.length} stops{day.distanceKm ? ` · ${day.distanceKm} km` : ''}</>
                         )}
                       </div>
                     </div>
                   </div>
+
+                  {geo.status !== 'live' && (
+                    <button className="gpsask" onClick={geo.start} disabled={geo.status === 'denied' || geo.status === 'unsupported' || geo.status === 'insecure'}>
+                      <Icon ui="nav" />
+                      {geo.status === 'off' && 'Track me on this trip'}
+                      {geo.status === 'waiting' && 'Getting a fix…'}
+                      {geo.status === 'denied' && 'Location blocked — enable it in browser settings'}
+                      {geo.status === 'error' && (geo.message ?? 'Position unavailable')}
+                      {geo.status === 'unsupported' && 'This browser has no GPS'}
+                      {geo.status === 'insecure' && 'GPS needs HTTPS'}
+                    </button>
+                  )}
+                  {geo.status === 'live' && geo.stale && (
+                    <div className="gpsstale">Last fix {freshness(geo.fix!.at)} — showing the schedule instead</div>
+                  )}
+
                   <div className="bar"><i style={{ width: pct + '%' }} /></div>
                   <div className="barlab">
                     <span>{doneCount} of {day.stops.length} stops done</span>
@@ -177,7 +227,7 @@ export default function App() {
 
                 <AltitudeProfile
                   stops={day.stops}
-                  activeId={nowStop?.id ?? null}
+                  activeId={activeId}
                   visited={visited}
                   onPick={id => {
                     setOpenIds(new Set([id]));
@@ -221,6 +271,7 @@ export default function App() {
                           toggleVisited(s.id);
                           showToast(visited.has(s.id) ? `${s.title} — unmarked` : `${s.title} — visited`);
                         }}
+                        weather={weather.cache?.byStop[s.id]}
                         onToast={showToast}
                       />
                     </div>
@@ -228,7 +279,9 @@ export default function App() {
                 </div>
               </>
             ) : (
-              <Placeholder tab={tab} />
+              tab === 'settings' ? (
+                <Settings geo={geo} wake={wake} weather={weather} />
+              ) : <Placeholder tab={tab} />
             )}
           </div>
           )}
@@ -254,12 +307,92 @@ export default function App() {
   );
 }
 
+function Settings({ geo, wake, weather }: {
+  geo: ReturnType<typeof useGeolocation>;
+  wake: ReturnType<typeof useWakeLock>;
+  weather: ReturnType<typeof useWeather>;
+}) {
+  return (
+    <div className="settings">
+      <div className="slab" style={{ margin: '16px 14px 6px' }}>On the road</div>
+
+      <div className="setrow">
+        <div>
+          <b>Track my position</b>
+          <small>
+            {geo.status === 'live' && (geo.stale ? `Last fix ${freshness(geo.fix!.at)}` : 'Live')}
+            {geo.status === 'waiting' && 'Waiting for a fix…'}
+            {geo.status === 'off' && 'Off — the NOW bar falls back to the schedule'}
+            {geo.status === 'denied' && 'Blocked. Allow location for this site in browser settings.'}
+            {geo.status === 'insecure' && 'Needs HTTPS. Works once deployed.'}
+            {geo.status === 'unsupported' && 'Not available in this browser'}
+            {geo.status === 'error' && (geo.message ?? 'Unavailable')}
+          </small>
+        </div>
+        <button
+          className={'toggle' + (geo.status === 'live' || geo.status === 'waiting' ? ' on' : '')}
+          onClick={() => (geo.tracking ? geo.stop() : geo.start())}
+          disabled={geo.status === 'denied' || geo.status === 'unsupported' || geo.status === 'insecure'}
+          aria-pressed={geo.tracking}
+        ><span /></button>
+      </div>
+
+      <div className="setrow">
+        <div>
+          <b>Keep the screen awake</b>
+          <small>{wake.supported
+            ? (wake.on ? 'On — the screen stays lit while the app is open' : 'Off')
+            : 'Not supported by this browser'}</small>
+        </div>
+        <button className={'toggle' + (wake.on ? ' on' : '')} onClick={wake.toggle}
+          disabled={!wake.supported} aria-pressed={wake.on}><span /></button>
+      </div>
+
+      <div className="slab" style={{ margin: '20px 14px 6px' }}>Weather</div>
+      <div className="setrow">
+        <div>
+          <b>Forecast</b>
+          <small>
+            {weather.loading ? 'Refreshing…'
+              : weather.cache ? (() => {
+                  const n = Object.keys(weather.cache!.byStop).length;
+                  return `Updated ${freshness(weather.cache!.fetchedAt)} · ${n} of ${TOTAL_STOPS} stops`
+                    + (n < TOTAL_STOPS
+                      ? '. Forecasts only run ~16 days ahead, so the later days fill in as departure gets closer.'
+                      : '');
+                })()
+              : weather.failed ? 'No forecast yet — needs a connection once'
+              : 'Not fetched'}
+            {weather.failed && weather.cache ? ' · last refresh failed' : ''}
+          </small>
+        </div>
+        <button className="btn" style={{ flex: 'none', minWidth: 0, padding: '0 14px' }}
+          onClick={() => weather.refresh()} disabled={weather.loading}>Refresh</button>
+      </div>
+
+      <div className="slab" style={{ margin: '20px 14px 6px' }}>Offline map</div>
+      <div className="setrow">
+        <div>
+          <b>Georgia basemap</b>
+          <small>64 MB · streaming from the server for now. The one-tap download
+            for full offline use arrives with the service worker.</small>
+        </div>
+      </div>
+
+      <p className="setnote">
+        Photos from Wikimedia Commons under their respective CC licences, credited on each
+        stop. Map data © OpenStreetMap contributors, tiles by Protomaps. Weather by Open-Meteo.
+        Nothing you tap, note or visit leaves this phone.
+      </p>
+    </div>
+  );
+}
+
 function Placeholder({ tab }: { tab: Tab }) {
   const copy = {
-    map: ['Map', 'Full-screen offline map with your car tracked live. Arrives with the MapLibre and basemap work.'],
-    food: ['Food', 'Every restaurant across all nine days in one list, searchable. 27 picks are already in the data.'],
-    settings: ['Settings', 'Offline map download, units, wake lock and the full photo credits list.'],
-  }[tab as 'map' | 'food' | 'settings'];
+    map: ['Map', 'Full-screen offline map with your car tracked live.'],
+    food: ['Food', 'Every restaurant across all nine days in one list. 27 picks are already in the data.'],
+  }[tab as 'map' | 'food'];
   return (
     <div className="holder">
       <Icon ui="map" />

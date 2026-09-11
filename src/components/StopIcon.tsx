@@ -33,6 +33,11 @@ export const UI = {
   nav: <path {...P} strokeWidth={1.7} d="M20.5 3.5 3.5 10.6l7 2.9 2.9 7 7.1-17Z" />,
   home: <path {...P} strokeWidth={1.7} d="M3.5 10.5 12 3.5l8.5 7M5.6 12.4V20h12.8v-7.6" />,
   gear: <><circle {...P} strokeWidth={1.7} cx="12" cy="12" r="3" /><path {...P} strokeWidth={1.7} d="M12 2.8v2.6M12 18.6v2.6M4.4 12H1.8M22.2 12h-2.6M6.2 6.2 4.4 4.4M19.6 19.6l-1.8-1.8M17.8 6.2l1.8-1.8M4.4 19.6l1.8-1.8" /></>,
+  sun: <><circle {...P} strokeWidth={1.7} cx="12" cy="12" r="4.2" /><path {...P} strokeWidth={1.7} d="M12 2.6v2.4M12 19v2.4M2.6 12h2.4M19 12h2.4M5.4 5.4l1.7 1.7M16.9 16.9l1.7 1.7M18.6 5.4l-1.7 1.7M7.1 16.9l-1.7 1.7" /></>,
+  cloud: <path {...P} strokeWidth={1.7} d="M7 17.5h9.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.3A3.6 3.6 0 0 0 7 17.5Z" />,
+  rain: <><path {...P} strokeWidth={1.6} d="M7 15.2h9.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.3A3.6 3.6 0 0 0 7 15.2Z" /><path {...P} strokeWidth={1.7} d="M8.6 18.4l-1 2.4M12.4 18.4l-1 2.4M16.2 18.4l-1 2.4" /></>,
+  snow: <><path {...P} strokeWidth={1.6} d="M7 15.2h9.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.3A3.6 3.6 0 0 0 7 15.2Z" /><path {...P} strokeWidth={1.7} d="M9 19h.01M12.5 20.4h.01M16 19h.01" /></>,
+  storm: <><path {...P} strokeWidth={1.6} d="M7 14.4h9.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.3A3.6 3.6 0 0 0 7 14.4Z" /><path {...P} strokeWidth={1.7} d="M13 16l-2.6 3.4h3L11 22.4" /></>,
   moon: <path {...P} strokeWidth={1.7} d="M20 14.4A8.6 8.6 0 0 1 9.6 4 8.6 8.6 0 1 0 20 14.4Z" />,
   pin: <><path {...P} strokeWidth={1.7} d="M12 21.5S5 14.9 5 10a7 7 0 0 1 14 0c0 4.9-7 11.5-7 11.5Z" /><circle {...P} strokeWidth={1.7} cx="12" cy="10" r="2.4" /></>,
 } as const;

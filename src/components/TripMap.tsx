@@ -16,6 +16,7 @@ declare const maplibregl: typeof MapLibre;
 type MLMap = MapLibre.Map;
 type MLMarker = MapLibre.Marker;
 import type { Day, Stop } from '../data/types';
+import type { Fix } from '../hooks/useGeolocation';
 import { buildStyle, LIGHT, DARK } from '../lib/mapStyle';
 import routes from '../data/routes.json';
 
@@ -37,20 +38,37 @@ const isDark = () => {
     (!root.hasAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
 };
 
+/** Accuracy circle as a polygon — MapLibre has no metres-radius circle. */
+function accuracyRing(lat: number, lon: number, metres: number, sides = 48) {
+  const ring: [number, number][] = [];
+  const dLat = metres / 111_320;
+  const dLon = metres / (111_320 * Math.cos((lat * Math.PI) / 180));
+  for (let i = 0; i <= sides; i++) {
+    const t = (i / sides) * 2 * Math.PI;
+    ring.push([lon + dLon * Math.cos(t), lat + dLat * Math.sin(t)]);
+  }
+  return { type: 'Feature' as const, properties: {}, geometry: { type: 'Polygon' as const, coordinates: [ring] } };
+}
+
 export function TripMap({
-  day, stops, activeId, visited, onPick,
+  day, stops, activeId, visited, onPick, fix, stale, follow, onFollowChange,
 }: {
   day: Day;
   stops: Stop[];
   activeId: string | null;
   visited: Set<string>;
   onPick: (id: string) => void;
+  fix: Fix | null;
+  stale: boolean;
+  follow: boolean;
+  onFollowChange: (v: boolean) => void;
 }) {
   const holder = useRef<HTMLDivElement>(null);
   const map = useRef<MLMap | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const meMarker = useRef<MLMarker | null>(null);
 
   /* ── create once ── */
   useEffect(() => {
@@ -114,8 +132,23 @@ export function TripMap({
           'line-dasharray': ['case', ['==', ['get', 'mode'], 'walk'], ['literal', [2, 2]], ['literal', [1, 0]]],
         },
       });
+      /* Your own position: accuracy halo under a heading-rotated car. */
+      m.addSource('me', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      m.addLayer({
+        id: 'me-accuracy', type: 'fill', source: 'me',
+        paint: { 'fill-color': '#2F5A7A', 'fill-opacity': 0.13 },
+      });
+      m.addLayer({
+        id: 'me-accuracy-edge', type: 'line', source: 'me',
+        paint: { 'line-color': '#2F5A7A', 'line-opacity': 0.35, 'line-width': 1 },
+      });
+
       setReady(true);
     });
+
+    /* Panning by hand means you want to look somewhere else — stop chasing. */
+    m.on('dragstart', () => onFollowChange(false));
+    m.on('zoomstart', e => { if ((e as { originalEvent?: unknown }).originalEvent) onFollowChange(false); });
 
     map.current = m;
     setMounted(true);
@@ -159,6 +192,49 @@ export function TripMap({
     return () => markers.forEach(mk => mk.remove());
   }, [day.n, stops, activeId, visited, mounted, onPick]);
 
+  /* ── the car: position, heading, accuracy halo ── */
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !mounted) return;
+
+    if (!fix) {
+      meMarker.current?.remove();
+      meMarker.current = null;
+      const src = ready && m.getSource('me');
+      if (src) (src as maplibregl.GeoJSONSource).setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    if (!meMarker.current) {
+      const el = document.createElement('div');
+      el.className = 'mecar';
+      el.setAttribute('aria-label', 'Your position');
+      el.innerHTML =
+        '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+        '<path d="M3 13.5h18M5.2 13.5l1.9-5.3A2 2 0 0 1 9 6.8h6a2 2 0 0 1 1.9 1.4l1.9 5.3M4 13.5v3.2M20 13.5v3.2M3 16.7h18" ' +
+        'fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<circle cx="7.4" cy="16.9" r="1.7" fill="none" stroke="currentColor" stroke-width="1.7"/>' +
+        '<circle cx="16.6" cy="16.9" r="1.7" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>';
+      meMarker.current = new maplibregl.Marker({ element: el, rotationAlignment: 'map' }).setLngLat([fix.lon, fix.lat]).addTo(m);
+    }
+
+    meMarker.current.setLngLat([fix.lon, fix.lat]);
+    // heading is null when stationary; keep the last one rather than snapping north
+    if (fix.heading !== null) meMarker.current.setRotation(fix.heading);
+    (meMarker.current.getElement() as HTMLElement).dataset.stale = stale ? '1' : '';
+
+    if (ready && m.getSource('me')) {
+      (m.getSource('me') as maplibregl.GeoJSONSource).setData({
+        type: 'FeatureCollection',
+        features: [accuracyRing(fix.lat, fix.lon, Math.min(fix.accuracy, 2000))],
+      });
+    }
+
+    if (follow) {
+      m.easeTo({ center: [fix.lon, fix.lat], zoom: Math.max(m.getZoom(), 13), duration: 900 });
+    }
+  }, [fix, stale, follow, mounted, ready]);
+
   return (
     <div className="mapwrap">
       <div ref={holder} className="mapcanvas" />
@@ -167,6 +243,15 @@ export function TripMap({
           <strong>Map unavailable</strong>
           <span>{error}</span>
         </div>
+      )}
+      {fix && (
+        <button
+          className={"mefollow" + (follow ? " on" : "")}
+          onClick={() => onFollowChange(!follow)}
+          aria-pressed={follow}
+        >
+          {follow ? "Following" : "Recentre"}
+        </button>
       )}
       <div className="maplegend">
         Day {day.n} · {day.from} → {day.to}

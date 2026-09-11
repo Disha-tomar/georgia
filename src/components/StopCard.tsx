@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Stop } from '../data/types';
 import { elevationOf, fmtAlt, photoOf } from '../lib/stops';
 import { Icon } from './StopIcon';
+import { describeCode, type DayWeather } from '../lib/weather';
 
 /**
  * Price tier as dots, not lari signs.
@@ -21,9 +22,10 @@ function PriceTier({ price }: { price: '₾' | '₾₾' | '₾₾₾' }) {
 }
 
 export function StopCard({
-  stop, open, isNow, visited, onToggleOpen, onToggleVisited, onToast,
+  stop, open, isNow, visited, weather, onToggleOpen, onToggleVisited, onToast,
 }: {
   stop: Stop;
+  weather?: DayWeather;
   open: boolean;
   isNow: boolean;
   visited: boolean;
@@ -39,6 +41,20 @@ export function StopCard({
   const copyCoords = () => {
     const c = `${stop.lat.toFixed(5)}, ${stop.lon.toFixed(5)}`;
     navigator.clipboard?.writeText(c).then(() => onToast('Copied ' + c), () => onToast(c));
+  };
+
+  /*
+   * Hand off to whatever mapping app the phone has. geo: is the offline-capable
+   * one and is handled natively on Android; iOS ignores it, so fall back to a
+   * Google Maps URL. Either way the coordinates are also one tap from the
+   * clipboard, which works when both fail.
+   */
+  const navigateTo = () => {
+    const { lat, lon, title } = stop;
+    const geo = `geo:${lat},${lon}?q=${lat},${lon}(${encodeURIComponent(title)})`;
+    const web = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+    const isAndroid = /android/i.test(navigator.userAgent);
+    window.open(isAndroid ? geo : web, "_blank", "noopener");
   };
 
   return (
@@ -62,6 +78,12 @@ export function StopCard({
               )}
               {elev !== undefined && !stop.transit && (
                 <span className="chip alt"><Icon ui="alt" />{fmtAlt(elev)}</span>
+              )}
+              {weather && (
+                <span className="chip wx" title={describeCode(weather.code).label}>
+                  <Icon ui={describeCode(weather.code).icon} />
+                  {weather.tMax}° / {weather.tMin}°
+                </span>
               )}
               {stop.dwell && <span className="chip"><Icon ui="clock" />{stop.dwell}</span>}
               {!!stop.food?.length && (
@@ -93,6 +115,16 @@ export function StopCard({
           )}
 
           {stop.blurb.map((p, i) => <p className="blurb" key={i}>{p}</p>)}
+
+          {weather && (
+            <div className="wxrow">
+              <span><Icon ui={describeCode(weather.code).icon} />{describeCode(weather.code).label}</span>
+              <span>{weather.tMax}° / {weather.tMin}°</span>
+              {weather.rainChance > 15 && <span>{weather.rainChance}% rain</span>}
+              {weather.windMax > 25 && <span>{weather.windMax} km/h wind</span>}
+              {weather.sunset && <span>sets {weather.sunset}</span>}
+            </div>
+          )}
 
           {stop.ticket && (
             <div className="ticket">
@@ -126,7 +158,7 @@ export function StopCard({
 
           <div className="slab">Where it is</div>
           <div className="acts">
-            <button className="btn p" onClick={() => onToast('Live map arrives in the next phase')}>
+            <button className="btn p" onClick={navigateTo}>
               <Icon ui="nav" />Navigate
             </button>
             <button className="btn" onClick={copyCoords}>
