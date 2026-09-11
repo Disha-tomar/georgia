@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Georgia Trip Companion — Day 3 mockup</title>
+<meta name="theme-color" content="#C86B3C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   GEORGIAN FOLK JOURNAL — design tokens
+   Accents lifted from minankari cloisonné enamel
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --paper:#F4EBDC; --paper-2:#FBF6EC; --paper-3:#EDE0CD;
+  --ink:#2A2320; --ink-soft:#6E6055; --ink-faint:#9C8B7C;
+  --terracotta:#C86B3C; --wine:#7B2D26; --enamel:#2E6B5E; --saffron:#E8B64C;
+  --lapis:#2F5A7A;
+  --line:rgba(42,35,32,.13); --line-2:rgba(42,35,32,.22);
+  --shadow:0 1px 2px rgba(42,35,32,.06),0 6px 18px -6px rgba(42,35,32,.14);
+  --shadow-lg:0 2px 4px rgba(42,35,32,.07),0 18px 44px -12px rgba(42,35,32,.22);
+  --r:16px; --r-sm:11px; --r-lg:22px;
+  --grain:.030;
+  color-scheme:light;
+}
+html[data-theme="dark"]{
+  --paper:#17130F; --paper-2:#221C17; --paper-3:#2C241D;
+  --ink:#F2E8D9; --ink-soft:#B4A292; --ink-faint:#867567;
+  --terracotta:#E28B5C; --wine:#D9675A; --enamel:#63B39D; --saffron:#F2C972;
+  --lapis:#7BA8CC;
+  --line:rgba(242,232,217,.13); --line-2:rgba(242,232,217,.22);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -8px rgba(0,0,0,.6);
+  --shadow-lg:0 2px 6px rgba(0,0,0,.5),0 20px 50px -14px rgba(0,0,0,.8);
+  --grain:.055;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.5; color:var(--ink);
+  background:var(--paper-3);
+  -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
+}
+h1,h2,h3,h4,.display{font-family:Fraunces,Georgia,serif; font-weight:600; letter-spacing:-.01em; margin:0}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2.5px solid var(--terracotta);outline-offset:2px;border-radius:6px}
+img{display:block;max-width:100%}
+
+/* ── paper grain ── */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:99;opacity:var(--grain);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply}
+html[data-theme="dark"] .grain{mix-blend-mode:screen}
+
+/* ── device frame (desktop only) ── */
+.stage{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:0}
+.phone{width:100%;max-width:100%;background:var(--paper);position:relative;overflow:hidden;
+  min-height:100dvh;display:flex;flex-direction:column}
+@media (min-width:600px){
+  .stage{padding:28px 16px;background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(200,107,60,.12), transparent 70%), var(--paper-3)}
+  .phone{max-width:412px;min-height:860px;max-height:92dvh;border-radius:38px;
+    box-shadow:var(--shadow-lg),0 0 0 10px #1a1512,0 0 0 11px rgba(255,255,255,.09)}
+  .scroll{border-radius:0}
+}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;padding-bottom:26px}
+
+/* ═══════════ HEADER ═══════════ */
+.topbar{position:sticky;top:0;z-index:30;background:var(--paper);
+  border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 16px 0}
+.brand{display:flex;align-items:center;gap:9px;padding-bottom:9px}
+.flag{width:22px;height:16px;border-radius:2.5px;flex:none;box-shadow:0 0 0 1px var(--line-2);
+  background:#fff;position:relative;overflow:hidden}
+.flag i{position:absolute;background:#DA291C}
+.flag i:nth-child(1){left:8.5px;top:0;bottom:0;width:5px}
+.flag i:nth-child(2){top:5.5px;left:0;right:0;height:5px}
+.brand h1{font-size:17px;line-height:1.2;flex:1;font-weight:600}
+.brand .sub{font-size:11.5px;color:var(--ink-faint);font-weight:500;letter-spacing:.04em;
+  text-transform:uppercase;font-family:Inter,sans-serif}
+.iconbtn{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:var(--ink-soft);
+  border:1px solid var(--line);flex:none;transition:background .15s,color .15s}
+.iconbtn:hover{background:var(--paper-3);color:var(--ink)}
+
+/* ── day strip ── */
+.daystrip{display:flex;align-items:center;gap:5px;padding:0 0 10px}
+.daystrip .nav{width:28px;height:34px;display:grid;place-items:center;color:var(--ink-faint);flex:none}
+.daystrip .nav:disabled{opacity:.28}
+.days{display:flex;gap:5px;flex:1;overflow-x:auto;scrollbar-width:none;padding:2px 1px}
+.days::-webkit-scrollbar{display:none}
+.day{flex:none;min-width:38px;height:46px;border-radius:12px;border:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  background:var(--paper-2);transition:all .18s cubic-bezier(.3,.8,.4,1)}
+.day b{font-family:Fraunces,serif;font-size:15px;font-weight:600;line-height:1}
+.day s{font-size:9px;color:var(--ink-faint);text-decoration:none;letter-spacing:.02em;font-weight:600}
+.day[data-past="1"]{color:var(--ink-faint);background:transparent}
+.day[data-past="1"] b::after{content:"";display:block;width:4px;height:4px;border-radius:50%;
+  background:var(--enamel);margin:2px auto -6px}
+.day[aria-current="true"]{background:var(--terracotta);border-color:var(--terracotta);color:#FFF8EF;
+  box-shadow:0 4px 12px -2px rgba(200,107,60,.5);transform:translateY(-1px)}
+.day[aria-current="true"] s{color:rgba(255,248,239,.8)}
+
+/* ═══════════ NOW BAR ═══════════ */
+.nowbar{position:sticky;top:0;z-index:28;padding:11px 14px 12px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--saffron) 22%,var(--paper)),var(--paper));
+  border-bottom:1px solid var(--line)}
+.nowtop{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--saffron);flex:none;position:relative;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--saffron) 30%,transparent)}
+.pulse::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--saffron);
+  animation:ring 2.4s ease-out infinite}
+@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pulse::after{animation:none;opacity:.35}}
+.nowtop .lab{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:var(--wine);text-transform:uppercase}
+.nowtop .clock{margin-left:auto;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.nowmain{display:flex;align-items:flex-start;gap:11px}
+.nowmain .car{width:40px;height:40px;border-radius:13px;background:var(--paper-2);border:1px solid var(--line-2);
+  display:grid;place-items:center;flex:none;color:var(--terracotta);box-shadow:var(--shadow)}
+.nowtext{flex:1;min-width:0}
+.nowtext .at{font-family:Fraunces,serif;font-size:18px;font-weight:600;line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nowtext .nx{font-size:13px;color:var(--ink-soft);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nowtext .nx b{color:var(--wine);font-weight:600}
+.bar{height:6px;border-radius:99px;background:var(--paper-3);margin-top:10px;overflow:hidden;
+  box-shadow:inset 0 0 0 1px var(--line)}
+.bar i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--enamel),var(--saffron));transition:width .5s cubic-bezier(.3,.8,.4,1)}
+.barlab{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-top:5px;font-weight:500}
+
+/* ═══════════ ALTITUDE / ROUTE RIBBON ═══════════ */
+.ribbon{margin:14px 14px 0;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:11px 12px 8px;box-shadow:var(--shadow)}
+.ribbon .rh{display:flex;align-items:baseline;gap:7px;margin-bottom:2px}
+.ribbon .rh h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);
+  font-family:Inter,sans-serif;font-weight:700}
+.ribbon .rh span{font-size:11px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums}
+.ribwrap{overflow-x:auto;scrollbar-width:none;margin:0 -4px}
+.ribwrap::-webkit-scrollbar{display:none}
+.ribbon svg{display:block;width:730px;height:106px}
+.rdot{cursor:pointer}
+.rdot circle{transition:all .2s}
+.rdot text{font-size:9px;font-weight:700;fill:var(--paper);font-family:Inter,sans-serif}
+.ribcar{transition:transform .55s cubic-bezier(.3,.8,.4,1)}
+
+/* ═══════════ LEG HEADER ═══════════ */
+.leg{margin:16px 14px 2px;display:flex;align-items:center;gap:9px}
+.leg h2{font-size:20px;font-weight:600;flex:1}
+.leg h2 em{font-style:normal;color:var(--ink-faint);font-weight:400}
+.leg .km{font-size:11.5px;font-weight:700;color:var(--terracotta);background:color-mix(in srgb,var(--terracotta) 12%,transparent);
+  padding:4px 9px;border-radius:99px;white-space:nowrap;letter-spacing:.02em}
+.legsub{margin:4px 14px 0;font-size:13px;color:var(--ink-soft);line-height:1.45}
+
+/* ═══════════ CHECKLIST ═══════════ */
+.checklist{margin:13px 14px 0;background:color-mix(in srgb,var(--lapis) 7%,var(--paper-2));
+  border:1px solid color-mix(in srgb,var(--lapis) 22%,transparent);border-radius:var(--r);padding:11px 13px}
+.checklist h4{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--lapis);
+  font-family:Inter,sans-serif;font-weight:700;margin-bottom:7px}
+.checklist label{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;padding:4px 0;cursor:pointer;line-height:1.35}
+.checklist input{appearance:none;width:19px;height:19px;border-radius:6px;border:1.6px solid var(--line-2);
+  flex:none;margin:1px 0 0;position:relative;transition:.15s;background:var(--paper)}
+.checklist input:checked{background:var(--lapis);border-color:var(--lapis)}
+.checklist input:checked::after{content:"";position:absolute;left:5.5px;top:2.5px;width:5px;height:9px;
+  border:2px solid #fff;border-top:0;border-left:0;transform:rotate(42deg)}
+.checklist input:checked+span{color:var(--ink-faint);text-decoration:line-through}
+
+/* ═══════════ THE JOURNEY RAIL ═══════════ */
+.rail{margin:18px 0 0;padding:0 14px;position:relative}
+.stop{position:relative;padding-left:38px;padding-bottom:12px}
+/* the spine */
+.stop::before{content:"";position:absolute;left:13px;top:26px;bottom:-4px;width:2px;
+  background:repeating-linear-gradient(180deg,var(--line-2) 0 5px,transparent 5px 10px)}
+.stop:last-child::before{display:none}
+.stop[data-done="1"]::before{background:var(--enamel);opacity:.45}
+/* the node */
+.node{position:absolute;left:0;top:12px;width:28px;height:28px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--line-2);display:grid;place-items:center;
+  color:var(--ink-faint);z-index:2;transition:.2s}
+.stop[data-done="1"] .node{background:var(--enamel);border-color:var(--enamel);color:#fff}
+.stop[data-now="1"] .node{background:var(--saffron);border-color:var(--saffron);color:#3A2A0A;
+  box-shadow:0 0 0 5px color-mix(in srgb,var(--saffron) 26%,transparent)}
+.node svg{width:15px;height:15px}
+
+/* the card */
+.card{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s,border-color .2s}
+.stop[data-now="1"] .card{border-color:color-mix(in srgb,var(--saffron) 55%,transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--saffron) 16%,transparent),var(--shadow)}
+.stop[data-done="1"] .card{background:transparent;box-shadow:none}
+.chead{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;width:100%;text-align:left}
+.ctime{font-family:Fraunces,serif;font-size:14px;font-weight:700;color:var(--terracotta);
+  font-variant-numeric:tabular-nums;flex:none;padding-top:1px;min-width:40px}
+.stop[data-done="1"] .ctime{color:var(--ink-faint)}
+.cbody{flex:1;min-width:0}
+.ctitle{display:block;font-family:Fraunces,serif;font-size:16.5px;font-weight:600;line-height:1.25}
+.stop[data-done="1"] .ctitle{color:var(--ink-soft)}
+.ckicker{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:1px;font-style:italic;
+  font-family:Fraunces,serif;line-height:1.35}
+.chev{flex:none;color:var(--ink-faint);transition:transform .28s cubic-bezier(.3,.8,.4,1);margin-top:3px}
+.chev svg{width:18px;height:18px;display:block}
+.stop[data-open="1"] .chev{transform:rotate(180deg)}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;
+  padding:3.5px 8px;border-radius:99px;background:var(--paper-3);color:var(--ink-soft);
+  border:1px solid var(--line);white-space:nowrap;letter-spacing:.01em}
+.chip svg{width:12px;height:12px;flex:none}
+.chip.alt{color:var(--lapis);background:color-mix(in srgb,var(--lapis) 9%,transparent);
+  border-color:color-mix(in srgb,var(--lapis) 20%,transparent)}
+.chip.wx{color:var(--terracotta);background:color-mix(in srgb,var(--terracotta) 9%,transparent);
+  border-color:color-mix(in srgb,var(--terracotta) 20%,transparent)}
+.chip.drv{color:var(--ink-faint)}
+.chip.food{color:var(--wine);background:color-mix(in srgb,var(--wine) 9%,transparent);
+  border-color:color-mix(in srgb,var(--wine) 20%,transparent)}
+
+/* expandable region */
+.cwrap{max-height:0;overflow:hidden;transition:max-height .38s cubic-bezier(.3,.8,.4,1)}
+@media (prefers-reduced-motion:reduce){.cwrap{transition:none}}
+.cinner{padding:0 12px 12px}
+
+/* photo */
+.photo{position:relative;border-radius:var(--r-sm);overflow:hidden;background:var(--paper-3);
+  aspect-ratio:16/10;margin-bottom:10px}
+.photo img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.photo img.on{opacity:1}
+.photo .cred{position:absolute;right:0;bottom:0;font-size:9px;padding:3px 7px;
+  background:rgba(20,16,13,.62);color:rgba(255,255,255,.85);border-radius:8px 0 0 0;
+  backdrop-filter:blur(3px);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* no-photo fallback: illustrated icon panel */
+.nophoto{aspect-ratio:16/10;border-radius:var(--r-sm);margin-bottom:10px;display:grid;place-items:center;
+  gap:6px;background:
+    repeating-linear-gradient(135deg,transparent 0 9px,color-mix(in srgb,var(--terracotta) 7%,transparent) 9px 10px),
+    color-mix(in srgb,var(--terracotta) 6%,var(--paper-3));
+  border:1px dashed color-mix(in srgb,var(--terracotta) 32%,transparent);color:var(--terracotta)}
+.nophoto svg{width:40px;height:40px;opacity:.75}
+.nophoto span{font-size:11px;color:var(--ink-faint);font-weight:500}
+
+.blurb{font-size:14.5px;line-height:1.55;color:var(--ink);margin:0 0 10px}
+.blurb + .blurb{margin-top:-4px}
+
+/* tips */
+.tips{margin:0 0 10px;padding:9px 11px;border-radius:var(--r-sm);
+  background:color-mix(in srgb,var(--saffron) 11%,transparent);
+  border:1px solid color-mix(in srgb,var(--saffron) 30%,transparent)}
+.tips li{font-size:13px;line-height:1.45;list-style:none;padding-left:16px;position:relative;margin:3px 0}
+.tips li::before{content:"";position:absolute;left:3px;top:7px;width:5px;height:5px;border-radius:50%;
+  background:var(--saffron)}
+.tips ul{margin:0;padding:0}
+
+/* section label */
+.slab{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);
+  font-weight:700;margin:12px 0 6px;display:flex;align-items:center;gap:6px}
+.slab::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* food */
+.food-item{display:flex;gap:10px;padding:9px 10px;border-radius:var(--r-sm);background:var(--paper);
+  border:1px solid var(--line);margin-bottom:6px;align-items:flex-start}
+.food-item .fi{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--wine) 10%,transparent);color:var(--wine)}
+.food-item .fi svg{width:17px;height:17px}
+.food-item .fb{flex:1;min-width:0}
+.food-item .fn{font-size:14px;font-weight:600;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.food-item .fp{font-size:11.5px;color:var(--enamel);font-weight:700;letter-spacing:.06em}
+.food-item .fw{font-size:12.5px;color:var(--ink-soft);line-height:1.4;margin-top:2px}
+.food-item .fd{font-size:12px;color:var(--wine);margin-top:3px;font-weight:500}
+.food-item .fd::before{content:"→ ";opacity:.6}
+.food-none{font-size:12.5px;color:var(--ink-faint);padding:7px 10px;border-radius:var(--r-sm);
+  background:var(--paper);border:1px dashed var(--line-2);line-height:1.45}
+
+/* ticket */
+.ticket{display:flex;gap:9px;align-items:center;padding:9px 11px;border-radius:var(--r-sm);
+  background:color-mix(in srgb,var(--enamel) 9%,transparent);
+  border:1px solid color-mix(in srgb,var(--enamel) 26%,transparent);margin-bottom:10px}
+.ticket svg{width:17px;height:17px;color:var(--enamel);flex:none}
+.ticket div{font-size:13px;line-height:1.4}
+.ticket b{color:var(--enamel)}
+
+/* mini map */
+.minimap{height:112px;border-radius:var(--r-sm);overflow:hidden;position:relative;margin-bottom:9px;
+  background:
+    radial-gradient(circle at 70% 30%, color-mix(in srgb,var(--enamel) 14%,transparent), transparent 60%),
+    color-mix(in srgb,var(--lapis) 8%,var(--paper-3));
+  border:1px solid var(--line)}
+.minimap svg{position:absolute;inset:0;width:100%;height:100%}
+.minimap .mlab{position:absolute;left:8px;top:7px;font-size:9.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-faint);background:color-mix(in srgb,var(--paper) 80%,transparent);
+  padding:2.5px 6px;border-radius:6px}
+.minimap .coord{position:absolute;right:8px;bottom:7px;font-size:10px;font-variant-numeric:tabular-nums;
+  color:var(--ink-soft);background:color-mix(in srgb,var(--paper) 80%,transparent);padding:2.5px 6px;border-radius:6px}
+
+/* actions */
+.acts{display:flex;gap:7px;flex-wrap:wrap}
+.btn{flex:1;min-width:112px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-height:44px;padding:0 13px;border-radius:12px;font-size:13.5px;font-weight:600;
+  border:1px solid var(--line-2);background:var(--paper);transition:.15s;white-space:nowrap}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover{background:var(--paper-3)}
+.btn.p{background:var(--terracotta);border-color:var(--terracotta);color:#FFF8EF;
+  box-shadow:0 3px 10px -2px rgba(200,107,60,.45)}
+.btn.p:hover{filter:brightness(1.06)}
+.btn.done{background:var(--enamel);border-color:var(--enamel);color:#fff}
+
+/* ═══════════ TAB BAR ═══════════ */
+.tabbar{display:flex;border-top:1px solid var(--line);background:var(--paper);
+  padding-bottom:env(safe-area-inset-bottom);flex:none;z-index:40}
+.tab{flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--ink-faint);font-size:10.5px;font-weight:600;letter-spacing:.02em;transition:color .15s}
+.tab svg{width:21px;height:21px}
+.tab[aria-current="true"]{color:var(--terracotta)}
+.tab[aria-current="true"] svg{transform:translateY(-1px)}
+
+/* ═══════════ OTHER-DAY / TAB PLACEHOLDER ═══════════ */
+.holder{margin:28px 16px;padding:26px 20px;text-align:center;border-radius:var(--r-lg);
+  background:var(--paper-2);border:1px dashed var(--line-2)}
+.holder svg{width:44px;height:44px;color:var(--terracotta);opacity:.6;margin:0 auto 12px}
+.holder h3{font-size:18px;margin-bottom:7px}
+.holder p{font-size:13.5px;color:var(--ink-soft);line-height:1.55;margin:0 auto;max-width:270px}
+.holder code{font-size:12px;background:var(--paper-3);padding:1.5px 5px;border-radius:5px}
+
+/* ═══════════ DEMO SCRUBBER + NOTE ═══════════ */
+.demo{margin:22px 14px 0;padding:11px 13px;border-radius:var(--r);
+  background:color-mix(in srgb,var(--wine) 6%,var(--paper-2));
+  border:1px solid color-mix(in srgb,var(--wine) 20%,transparent)}
+.demo h4{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--wine);
+  font-family:Inter,sans-serif;font-weight:700;display:flex;align-items:center;gap:6px}
+.demo p{font-size:12.5px;color:var(--ink-soft);margin:5px 0 9px;line-height:1.45}
+.demo input[type=range]{width:100%;appearance:none;height:26px;background:none}
+.demo input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:var(--paper-3);
+  box-shadow:inset 0 0 0 1px var(--line-2)}
+.demo input[type=range]::-webkit-slider-thumb{appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--wine);border:3px solid var(--paper);margin-top:-8px;box-shadow:var(--shadow);cursor:grab}
+.demo input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:var(--paper-3)}
+.demo input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--wine);
+  border:3px solid var(--paper);cursor:grab}
+
+.note{margin:16px 14px 8px;font-size:12px;color:var(--ink-faint);line-height:1.55}
+.note summary{cursor:pointer;font-weight:600;color:var(--ink-soft);padding:7px 0;list-style:none;
+  display:flex;align-items:center;gap:6px}
+.note summary::-webkit-details-marker{display:none}
+.note summary::before{content:"›";font-size:15px;transition:transform .2s;display:inline-block}
+.note[open] summary::before{transform:rotate(90deg)}
+.note ul{margin:3px 0 0;padding-left:17px}
+.note li{margin:4px 0}
+.note b{color:var(--ink-soft)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:82px;transform:translate(-50%,16px);z-index:200;
+  background:var(--ink);color:var(--paper);font-size:13px;font-weight:500;padding:10px 16px;
+  border-radius:99px;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .25s;max-width:86vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<!-- ════════ hand-drawn icon set ════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="i-car"><path d="M3 13.5h18M5.2 13.5l1.9-5.3A2 2 0 0 1 9 6.8h6a2 2 0 0 1 1.9 1.4l1.9 5.3M4 13.5v3.2M20 13.5v3.2M3 16.7h18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.4" cy="16.9" r="1.7" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16.6" cy="16.9" r="1.7" fill="none" stroke="currentColor" stroke-width="1.6"/></g>
+  <g id="i-monument"><path d="M4 20h16M6.5 20V8.5l2-3.5 2 3.5V20M13.5 20V6.8l2-2.8 2 2.8V20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-fortress"><path d="M3.5 20V8.5h2.3V6h2.4v2.5h2.3V6h2.4v2.5h2.3V6h2.4v2.5h2.3V20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20v-4.5h4V20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
+  <g id="i-khinkali"><circle cx="12" cy="14.2" r="6.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.8V3.4M12 3.4c-1.1 0-1.9.7-1.9 1.5M12 3.4c1.1 0 1.9.7 1.9 1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8.3 9.6 12 7.8l3.7 1.8M6.3 12.2 12 7.8l5.7 4.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity=".65"/></g>
+  <g id="i-river"><path d="M2.5 15.5c2.4-2 4.7 2 7.1 0s4.7 2 7.1 0 4.7 2 4.8.3M2.5 19.4c2.4-2 4.7 2 7.1 0s4.7 2 7.1 0 4.7 2 4.8.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M6.5 11.5 10.8 4l4.2 7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/></g>
+  <g id="i-peak"><path d="M2.5 19h19L14.7 6.4 11.4 12 9 8.6 2.5 19Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17.6" cy="5.4" r="2.1" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".6"/></g>
+  <g id="i-bed"><path d="M3 19v-9M3 13.5h18V19M21 19v-4M3 19h18M7.4 10.4h3.2a1.6 1.6 0 0 1 1.6 1.6v1.5H5.8V12a1.6 1.6 0 0 1 1.6-1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-check"><path d="M5 12.6l4.4 4.4L19 7.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-chev"><path d="M6 9.5l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-left"><path d="M14.5 5.5l-7 6.5 7 6.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-right"><path d="M9.5 5.5l7 6.5-7 6.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-alt"><path d="M2.5 19h19L12 4 2.5 19Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8.2 12.5h7.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".6"/></g>
+  <g id="i-sun"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.6v2.4M12 19v2.4M2.6 12h2.4M19 12h2.4M5.4 5.4l1.7 1.7M16.9 16.9l1.7 1.7M18.6 5.4l-1.7 1.7M7.1 16.9l-1.7 1.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></g>
+  <g id="i-cloud"><path d="M7 17.5h9.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.3A3.6 3.6 0 0 0 7 17.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-clock"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.2V12l3.4 2.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></g>
+  <g id="i-ticket"><path d="M3.5 9.4V7a1.5 1.5 0 0 1 1.5-1.5h14A1.5 1.5 0 0 1 20.5 7v2.4a2.6 2.6 0 0 0 0 5.2V17a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 17v-2.4a2.6 2.6 0 0 0 0-5.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
+  <g id="i-map"><path d="M9 4.2 3.5 6.4v13.4L9 17.6l6 2.2 5.5-2.2V4.2L15 6.4 9 4.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 4.2v13.4M15 6.4v13.4" fill="none" stroke="currentColor" stroke-width="1.6"/></g>
+  <g id="i-nav"><path d="M20.5 3.5 3.5 10.6l7 2.9 2.9 7 7.1-17Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-home"><path d="M3.5 10.5 12 3.5l8.5 7M5.6 12.4V20h12.8v-7.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-gear"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.8v2.6M12 18.6v2.6M4.4 12H1.8M22.2 12h-2.6M6.2 6.2 4.4 4.4M19.6 19.6l-1.8-1.8M17.8 6.2l1.8-1.8M4.4 19.6l1.8-1.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></g>
+  <g id="i-moon"><path d="M20 14.4A8.6 8.6 0 0 1 9.6 4 8.6 8.6 0 1 0 20 14.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></g>
+  <g id="i-wand"><path d="M4 20 14.5 9.5M17 3.5v3M20.5 7h-3M13.8 4.4l2.1 2.1M20.6 11.2l-2.1 2.1M14.5 9.5l2.2 2.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></g>
+  <g id="i-pin"><path d="M12 21.5S5 14.9 5 10a7 7 0 0 1 14 0c0 4.9-7 11.5-7 11.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/></g>
+</defs></svg>
+
+<div class="stage">
+<div class="phone">
+
+  <!-- ════════ TOP BAR ════════ -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="flag" aria-hidden="true"><i></i><i></i></span>
+      <div style="flex:1;min-width:0">
+        <h1>Georgia</h1>
+        <div class="sub" id="daySub">Day 3 of 9 · 28 Sep</div>
+      </div>
+      <button class="iconbtn" id="themeBtn" aria-label="Toggle dark mode">
+        <svg width="18" height="18" viewBox="0 0 24 24"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+    <div class="daystrip">
+      <button class="nav" id="prevDay" aria-label="Previous day"><svg width="17" height="17" viewBox="0 0 24 24"><use href="#i-left"/></svg></button>
+      <div class="days" id="days" role="tablist"></div>
+      <button class="nav" id="nextDay" aria-label="Next day"><svg width="17" height="17" viewBox="0 0 24 24"><use href="#i-right"/></svg></button>
+    </div>
+  </header>
+
+  <div class="scroll" id="scroll">
+
+    <!-- ════════ NOW BAR ════════ -->
+    <section class="nowbar" id="nowbar">
+      <div class="nowtop">
+        <span class="pulse"></span>
+        <span class="lab">Now</span>
+        <span class="clock" id="clock">—</span>
+      </div>
+      <div class="nowmain">
+        <span class="car"><svg width="23" height="23" viewBox="0 0 24 24"><use href="#i-car"/></svg></span>
+        <div class="nowtext">
+          <div class="at" id="nowAt">—</div>
+          <div class="nx" id="nowNext">—</div>
+        </div>
+      </div>
+      <div class="bar"><i id="progBar" style="width:0%"></i></div>
+      <div class="barlab"><span id="progTxt">—</span><span id="progRight">—</span></div>
+    </section>
+
+    <div id="dayContent"></div>
+
+    <!-- ════════ DEMO CONTROLS ════════ -->
+    <section class="demo" id="demo">
+      <h4><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-wand"/></svg> Mockup control</h4>
+      <p>In the real app this comes from your phone's GPS. Drag to simulate driving the day and watch the <b>NOW</b> bar, the rail and the altitude profile respond.</p>
+      <input type="range" id="sim" min="0" max="7" step="1" value="3" aria-label="Simulate position along the day">
+    </section>
+
+    <details class="note">
+      <summary>What's real in this mockup, and what isn't</summary>
+      <ul>
+        <li><b>Real:</b> all 8 Day 3 stops, their times and drive legs, straight from your PDF.</li>
+        <li><b>Real:</b> altitudes — Tbilisi 450 m climbing to Jvari Pass at 2,395 m, then down to Stepantsminda at 1,740 m.</li>
+        <li><b>Real:</b> the food picks, from the research pass — Chabarukhi in Pasanauri, Tiba and Kazbegi Good Food up in Stepantsminda.</li>
+        <li><b>Real:</b> photos are live from Wikimedia Commons with their actual credits and licences. In the built app they're downloaded, compressed and bundled so they work offline.</li>
+        <li><b>Placeholder:</b> weather numbers are samples — the real app fetches them from Open-Meteo and caches them.</li>
+        <li><b>Placeholder:</b> the mini-maps are stylised panels. The real one is MapLibre on an offline Georgia vector basemap with your car tracked live.</li>
+        <li><b>Placeholder:</b> Days 1–2 and 4–9 are Phase 1 work. Only Day 3 is built here.</li>
+        <li><b>Coordinates</b> shown are approximate; every one gets verified against OpenStreetMap in Phase 1.</li>
+      </ul>
+    </details>
+  </div>
+
+  <!-- ════════ TAB BAR ════════ -->
+  <nav class="tabbar">
+    <button class="tab" aria-current="true" data-tab="days"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg>Days</button>
+    <button class="tab" data-tab="map"><svg viewBox="0 0 24 24"><use href="#i-map"/></svg>Map</button>
+    <button class="tab" data-tab="food"><svg viewBox="0 0 24 24"><use href="#i-khinkali"/></svg>Food</button>
+    <button class="tab" data-tab="set"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg>Settings</button>
+  </nav>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   DATA — Day 3, transcribed from "Georgia Detailed Itinerary" PDF.
+   Coordinates approximate pending Phase 1 verification vs OSM.
+   ═══════════════════════════════════════════════════════════════ */
+const COMMONS = 'https://commons.wikimedia.org/wiki/Special:FilePath/';
+const img = (f,w=900) => COMMONS + f + '?width=' + w;
+
+const DAYS = [
+  {n:1, date:'26 Sep', label:'Sep 26', from:'Dubai',   to:'Tbilisi'},
+  {n:2, date:'27 Sep', label:'Sep 27', from:'Tbilisi', to:'Tbilisi'},
+  {n:3, date:'28 Sep', label:'Sep 28', from:'Tbilisi', to:'Kazbegi'},
+  {n:4, date:'29 Sep', label:'Sep 29', from:'Kazbegi', to:'Gori'},
+  {n:5, date:'30 Sep', label:'Sep 30', from:'Gori',    to:'Kutaisi'},
+  {n:6, date:'1 Oct',  label:'Oct 1',  from:'Kutaisi', to:'Borjomi'},
+  {n:7, date:'2 Oct',  label:'Oct 2',  from:'Borjomi', to:'Tbilisi'},
+  {n:8, date:'3 Oct',  label:'Oct 3',  from:'Tbilisi', to:'Kakheti'},
+  {n:9, date:'4 Oct',  label:'Oct 4',  from:'Tbilisi', to:'Dubai'},
+];
+
+const DAY3 = {
+  n:3, headline:'Tbilisi <em>→</em> Kazbegi', km:'160 km',
+  sub:'Six stops climbing the Georgian Military Highway from the city to the high Caucasus — a 1,945 m ascent to Jvari Pass before dropping into Stepantsminda for golden hour.',
+  checklist:[
+    'Check out of Panorama Boutique Hotel',
+    'Collect rental car — photograph every existing scratch',
+    'Fuel up before the Gudauri climb',
+    'Passport + licence on you for the rental'
+  ],
+  stops:[
+    { time:'09:00', title:'Depart Tbilisi', kicker:'Pick up the rental car', kind:'car',
+      lat:41.6938, lon:44.8015, elev:450, wx:'20°', wxIcon:'i-sun',
+      blurb:['Pack up, check out of Panorama Boutique Hotel and head directly north out of the city centre. The whole day runs one direction — no backtracking.'],
+      photo:null, photoNote:'No free photo — illustrated fallback',
+      food:[], foodNote:'Breakfast at the hotel before you go. The next real food stop is Pasanauri at 12:30 — over three hours away.'
+    },
+    { time:'09:30', title:'Chronicles of Georgia', kicker:"Georgia's Stonehenge", kind:'monument',
+      lat:41.7846, lon:44.7761, elev:600, wx:'21°', wxIcon:'i-sun', drive:'20 min · 18 km', dwell:'30–45 min',
+      blurb:[
+        'Sixteen bronze pillars, each 35 m tall, carved with Georgian kings on the upper half and the life of Christ below — Tsereteli\'s unfinished monument on a hill above the Tbilisi Sea reservoir.',
+        'You skipped this on the walking days, so it goes first while the morning light is still crisp.'
+      ],
+      photo:{file:'Georgiaren%20Kronikak%20(Tbilisi)%20-%20The%20Chronicle%20of%20Georgia%20-%20Tagzania%20-%201775459623095.jpg', credit:'MSO / Tagzania', license:'CC BY-SA 4.0'},
+      tips:['Parking lot right at the base — no walk in.','Free to enter, no ticket office.'],
+      food:[], foodNote:'Nothing up here. Grab coffee in the city before you leave.'
+    },
+    { time:'11:00', title:'Ananuri Fortress', kicker:'A castle on turquoise water', kind:'fortress',
+      lat:42.1647, lon:44.7031, elev:830, wx:'19°', wxIcon:'i-sun', drive:'1 h · 70 km', dwell:'45 min',
+      blurb:[
+        'A 17th-century castle complex right on the edge of the Zhinvali Reservoir, where the Aragvi backs up into an improbable turquoise. Two churches, stone watchtowers and a curtain wall you can walk.',
+        'The shot is the church against the bright blue water — best from the wall on the reservoir side.'
+      ],
+      photo:{file:'Georgia%20-%20Ananuri%20castle%20complex.jpg', credit:'P. Hughes', license:'CC BY 4.0'},
+      tips:['Park by the bridge below the complex.','Free to enter the grounds; cover shoulders inside the churches.'],
+      food:[], foodNote:'Only churchkhela and snack stalls by the car park. Hold out for Pasanauri — you are 25 minutes away from the best khinkali in the country.'
+    },
+    { time:'12:30', title:'Pasanauri', kicker:'Where khinkali was invented', kind:'khinkali',
+      lat:42.3536, lon:44.6872, elev:1050, wx:'17°', wxIcon:'i-cloud', drive:'25 min · 24 km', dwell:'1 h 15',
+      blurb:[
+        'A small riverside village that claims — with reasonable authority — to be the birthplace of khinkali. This is the lunch stop the whole morning is built around.',
+        'Order them plain, twist off the doughy top-knot, bite a hole, drink the broth first. Never with a fork. Count your knots and leave them on the plate.'
+      ],
+      photo:{file:'Kazbegi%2C%20Khinkali%2C%20Georgia.jpg', credit:'Vyacheslav Argenberg', license:'CC BY 4.0'},
+      tips:['Sit on a river-side terrace if the weather holds.','Khinkali are made to order — budget the full hour.'],
+      food:[
+        {name:'Restaurant Chabarukhi', price:'₾₾', why:'Rustic roadside duqani in the village itself, the one the itinerary names. Hand-rolled to order.', dish:'plain beef khinkali, freshly rolled'},
+        {name:'Pasanauri Restaurant', price:'₾', why:'The other village institution, right on the main road. Simple, generous, riverside seating.', dish:'khinkali + mtsvadi off the coals'}
+      ]
+    },
+    { time:'14:15', title:'Black & White Aragvi Confluence', kicker:'Two rivers, one riverbed', kind:'river',
+      lat:42.3722, lon:44.6797, elev:1100, wx:'16°', wxIcon:'i-cloud', drive:'5 min · 3 km', dwell:'15 min',
+      blurb:[
+        'Just north of Pasanauri the Black Aragvi and White Aragvi meet — and for a few hundred metres refuse to mix, running side by side in the same bed with a hard line down the middle.',
+        'A small roadside pull-off, easy to blow straight past at speed.'
+      ],
+      photo:null, photoNote:'No freely-licensed photo found — this is the illustrated fallback',
+      tips:['Northbound, roughly 3 km past the village. Slow down early.','Clearest after rain, when the dark branch runs darker.'],
+      food:[], foodNote:'A 15-minute photo stop, nothing more. You have just eaten.'
+    },
+    { time:'15:15', title:'Russia–Georgia Friendship Monument', kicker:"On the lip of Devil's Valley", kind:'peak',
+      lat:42.4899, lon:44.4547, elev:2384, wx:'9°', wxIcon:'i-cloud', drive:'45 min · 34 km', dwell:'45 min',
+      blurb:[
+        'A huge circular concrete drum built in 1983, its inner face covered in a bright tiled mosaic of Georgian and Russian history — perched on the very edge of a cliff above the valley they call the Devil\'s.',
+        'The panorama is the best on the road. Watch for paragliders drifting past the observation deck at eye level.'
+      ],
+      photo:{file:'Russia%E2%80%93Georgia%20Friendship%20Monument%2009.23.jpg', credit:'Supanut Arunoprayote', license:'CC BY 4.0'},
+      tips:['You have climbed 1,284 m since lunch — it will be far colder and windier. Grab a jacket from the boot.','Short unpaved access track off the highway past Gudauri.'],
+      food:[], foodNote:'Coffee and corn vans in the car park in season. Proper food is back down in Gudauri.'
+    },
+    { time:'16:30', title:'Jvari Pass Mineral Springs', kicker:'Travertine terraces at the top', kind:'river',
+      lat:42.5060, lon:44.4530, elev:2395, wx:'8°', wxIcon:'i-cloud', drive:'15 min · 9 km', dwell:'20 min',
+      blurb:[
+        'The highest point of the whole highway. Mineral-rich spring water runs down the mountain face beside the asphalt and has, over centuries, built a terrace of rust-and-cream limestone you can walk right up to.',
+        'Rare geology, ten steps from the car.'
+      ],
+      photo:{file:'Georgia%20-%20Jvari%20pass%2C%202395%20m.jpg', credit:'Mursten', license:'CC BY-SA 4.0'},
+      tips:['2,395 m — the top. Weather turns here fast and first.','Terrace is right beside the road; do not climb the wet rust-coloured rock.'],
+      food:[], foodNote:'Nothing at the pass. Next food is in Stepantsminda, 35 minutes downhill.'
+    },
+    { time:'17:30', title:'Kazbegi · Stepantsminda', kicker:'Golden hour on Mount Kazbek', kind:'bed',
+      lat:42.6572, lon:44.6425, elev:1740, wx:'12°', wxIcon:'i-sun', drive:'35 min · 30 km',
+      blurb:[
+        'Down through the tunnels into Stepantsminda, arriving just as the late sun hits the 5,054 m face of Kazbek. Check in, then dinner in town.',
+        'Rest up — Gergeti Trinity Church is an 08:30 start tomorrow.'
+      ],
+      photo:{file:'Kazbegi%2C%20Stepantsminda%2C%20Gergeti%2C%20Georgia.jpg', credit:'Vyacheslav Argenberg', license:'CC BY 4.0'},
+      tips:['Kazbek clears and clouds over within minutes — shoot it the moment it shows.'],
+      food:[
+        {name:'Tiba', price:'₾₾₾', why:'On the hill opposite, facing Gergeti Trinity through floor-to-ceiling windows. The serious dinner.', dish:'khabidzgina with mountain potatoes; kartokha khinkali'},
+        {name:'Kazbegi Good Food', price:'₾', why:'Proper duqani run by an elderly couple. No frills, no menu theatre, excellent.', dish:'mtsvadi, kupati sausage, ostri stew'},
+        {name:'Rooms Hotel Kazbegi', price:'₾₾₾', why:'The famous Kazbek-view terrace. Book ahead in season.', dish:'drinks at sunset even if you eat elsewhere'}
+      ]
+    }
+  ]
+};
+
+/* ═══════════════════ RENDER HELPERS ═══════════════════ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ico = (id,cls='') => `<svg viewBox="0 0 24 24" class="${cls}"><use href="#i-${id}"/></svg>`;
+const fmtAlt = m => m.toLocaleString('en-US') + ' m';
+
+let state = { day:3, pos:3, done:new Set([0,1,2]), open:new Set([3]) };
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 2600);
+}
+
+/* ── day strip ── */
+function renderDays(){
+  $('#days').innerHTML = DAYS.map(d => `
+    <button class="day" role="tab" data-day="${d.n}"
+      ${d.n===state.day?'aria-current="true"':''} ${d.n<state.day?'data-past="1"':''}
+      aria-label="Day ${d.n}, ${esc(d.date)}, ${esc(d.from)} to ${esc(d.to)}">
+      <b>${d.n}</b><s>${esc(d.label.split(' ')[1])}</s>
+    </button>`).join('');
+  $('#days').querySelectorAll('.day').forEach(b =>
+    b.onclick = () => { state.day = +b.dataset.day; render(); $('#scroll').scrollTop = 0; });
+  $('#prevDay').disabled = state.day<=1;
+  $('#nextDay').disabled = state.day>=9;
+  const d = DAYS[state.day-1];
+  $('#daySub').textContent = `Day ${d.n} of 9 · ${d.date}`;
+}
+
+/* ── altitude profile ribbon ── */
+function renderRibbon(stops){
+  const W=730, H=106, PAD_L=26, PAD_R=26, TOP=20, BOT=74;
+  const maxE = Math.max(...stops.map(s=>s.elev)) * 1.08;
+  const xs = stops.map((_,i)=> PAD_L + i*((W-PAD_L-PAD_R)/(stops.length-1)));
+  const ys = stops.map(s=> BOT - (s.elev/maxE)*(BOT-TOP));
+  const line = xs.map((x,i)=>`${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  const area = `${PAD_L},${BOT} ${line} ${W-PAD_R},${BOT}`;
+  const cx = xs[state.pos], cy = ys[state.pos];
+
+  const dots = stops.map((s,i)=>{
+    const done = state.done.has(i), now = i===state.pos;
+    const fill = now ? 'var(--saffron)' : done ? 'var(--enamel)' : 'var(--paper-2)';
+    const stroke = now ? 'var(--saffron)' : done ? 'var(--enamel)' : 'var(--line-2)';
+    const tf = now ? '#3A2A0A' : done ? '#fff' : 'var(--ink-faint)';
+    return `<g class="rdot" data-i="${i}" role="button" tabindex="0" aria-label="${esc(s.title)}, ${fmtAlt(s.elev)}">
+      <circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${now?9:7.5}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+      <text x="${xs[i].toFixed(1)}" y="${(ys[i]+3.2).toFixed(1)}" text-anchor="middle" fill="${tf}">${i+1}</text>
+      <text x="${xs[i].toFixed(1)}" y="${(BOT+17).toFixed(1)}" text-anchor="middle" fill="var(--ink-faint)"
+        style="font-size:8.5px;font-weight:600">${fmtAlt(s.elev).replace(' m','')}</text>
+      <text x="${xs[i].toFixed(1)}" y="${(BOT+28).toFixed(1)}" text-anchor="middle" fill="var(--ink-faint)"
+        style="font-size:8px;font-weight:500;opacity:.75">${esc(s.time)}</text>
+    </g>`;
+  }).join('');
+
+  return `<section class="ribbon">
+    <div class="rh"><h4>Altitude profile</h4><span>${fmtAlt(stops[0].elev)} → ${fmtAlt(Math.max(...stops.map(s=>s.elev)))} → ${fmtAlt(stops[stops.length-1].elev)}</span></div>
+    <div class="ribwrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Altitude profile of Day 3, climbing from Tbilisi at 450 metres to Jvari Pass at 2,395 metres then down to Stepantsminda at 1,740 metres">
+      <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--terracotta)" stop-opacity=".30"/>
+        <stop offset="1" stop-color="var(--terracotta)" stop-opacity="0"/>
+      </linearGradient></defs>
+      <polygon points="${area}" fill="url(#ag)"/>
+      <polyline points="${line}" fill="none" stroke="var(--terracotta)" stroke-width="2.4"
+        stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="${PAD_L-8}" y1="${BOT}" x2="${W-PAD_R+8}" y2="${BOT}" stroke="var(--line-2)" stroke-width="1"/>
+      ${dots}
+      <g class="ribcar" transform="translate(${cx.toFixed(1)},${(cy-21).toFixed(1)})">
+        <circle cx="0" cy="0" r="11.5" fill="var(--paper)" stroke="var(--saffron)" stroke-width="2.2"/>
+        <g transform="translate(-8,-8) scale(.666)" style="color:var(--terracotta)">
+          <use href="#i-car"/>
+        </g>
+      </g>
+    </svg></div>
+  </section>`;
+}
+
+/* ── one stop card ── */
+function renderStop(s, i, total){
+  const done = state.done.has(i), now = i===state.pos, open = state.open.has(i);
+  const photo = s.photo
+    ? `<div class="photo"><img data-src="${img(s.photo.file)}" alt="${esc(s.title)}">
+         <span class="cred">${esc(s.photo.credit)} · ${esc(s.photo.license)} · Wikimedia</span></div>`
+    : `<div class="nophoto">${ico(s.kind)}<span>${esc(s.photoNote||'No photo')}</span></div>`;
+
+  const foodBlock = s.food && s.food.length
+    ? s.food.map(f=>`<div class="food-item">
+        <span class="fi">${ico('khinkali')}</span>
+        <div class="fb">
+          <div class="fn">${esc(f.name)} <span class="fp">${f.price}</span></div>
+          <div class="fw">${esc(f.why)}</div>
+          ${f.dish?`<div class="fd">${esc(f.dish)}</div>`:''}
+        </div></div>`).join('')
+    : `<div class="food-none">${esc(s.foodNote||'')}</div>`;
+
+  return `<article class="stop" data-i="${i}" ${done?'data-done="1"':''} ${now?'data-now="1"':''} ${open?'data-open="1"':''}>
+    <span class="node">${done?ico('check'):ico(s.kind)}</span>
+    <div class="card">
+      <button class="chead" aria-expanded="${open}" aria-controls="w${i}">
+        <span class="ctime">${esc(s.time)}</span>
+        <span class="cbody">
+          <span class="ctitle">${esc(s.title)}</span>
+          <span class="ckicker">${esc(s.kicker)}</span>
+          <span class="chips">
+            ${s.drive?`<span class="chip drv">${ico('car')}${esc(s.drive)}</span>`:''}
+            <span class="chip alt">${ico('alt')}${fmtAlt(s.elev)}</span>
+            <span class="chip wx">${ico(s.wxIcon.replace(/^i-/,''))}${esc(s.wx)}</span>
+            ${s.dwell?`<span class="chip">${ico('clock')}${esc(s.dwell)}</span>`:''}
+            ${s.food&&s.food.length?`<span class="chip food">${ico('khinkali')}${s.food.length} to eat</span>`:''}
+          </span>
+        </span>
+        <span class="chev">${ico('chev')}</span>
+      </button>
+      <div class="cwrap" id="w${i}"><div class="cinner">
+        ${photo}
+        ${s.blurb.map(p=>`<p class="blurb">${esc(p)}</p>`).join('')}
+        ${s.tips?`<div class="tips"><ul>${s.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`:''}
+        <div class="slab">Eat here</div>
+        ${foodBlock}
+        <div class="slab">Where it is</div>
+        <div class="minimap">
+          <span class="mlab">Offline map · stop ${i+1} of ${total}</span>
+          <svg viewBox="0 0 300 112" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M-10,96 C60,84 90,52 150,50 S250,34 310,8" fill="none"
+              stroke="var(--line-2)" stroke-width="9" stroke-linecap="round" opacity=".55"/>
+            <path d="M-10,96 C60,84 90,52 150,50 S250,34 310,8" fill="none"
+              stroke="var(--terracotta)" stroke-width="2.6" stroke-dasharray="7 5" stroke-linecap="round"/>
+            <circle cx="150" cy="50" r="12" fill="none" stroke="var(--saffron)" stroke-width="2" opacity=".5"/>
+            <circle cx="150" cy="50" r="6.5" fill="var(--saffron)" stroke="var(--paper)" stroke-width="2"/>
+            <circle cx="52" cy="86" r="4.5" fill="var(--enamel)" stroke="var(--paper)" stroke-width="1.8"/>
+            <circle cx="248" cy="27" r="4.5" fill="var(--paper-2)" stroke="var(--line-2)" stroke-width="1.8"/>
+          </svg>
+          <span class="coord">${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}</span>
+        </div>
+        <div class="acts">
+          <button class="btn p" data-act="nav" data-i="${i}">${ico('nav')}Navigate</button>
+          <button class="btn" data-act="copy" data-i="${i}">${ico('pin')}Copy coords</button>
+          <button class="btn ${done?'done':''}" data-act="tick" data-i="${i}">
+            ${ico('check')}${done?'Visited':'Mark visited'}</button>
+        </div>
+      </div></div>
+    </div>
+  </article>`;
+}
+
+/* ── the whole day ── */
+function render(){
+  renderDays();
+  const host = $('#dayContent');
+
+  if(state.day !== 3){
+    const d = DAYS[state.day-1];
+    $('#nowbar').style.display = 'none';
+    $('#demo').style.display = 'none';
+    host.innerHTML = `<div class="holder">
+      ${ico('map')}
+      <h3>Day ${d.n} · ${esc(d.from)} → ${esc(d.to)}</h3>
+      <p>Not built yet. This mockup covers <b>Day 3</b> only, so the design can be settled before
+      all nine days and ~55 stops go into <code>itinerary.ts</code> in Phase 1.</p>
+    </div>`;
+    return;
+  }
+
+  $('#nowbar').style.display = '';
+  $('#demo').style.display = '';
+  const stops = DAY3.stops;
+
+  host.innerHTML = `
+    ${renderRibbon(stops)}
+    <div class="leg"><h2>${DAY3.headline}</h2><span class="km">${DAY3.km}</span></div>
+    <p class="legsub">${DAY3.sub}</p>
+    <section class="checklist">
+      <h4>Before you leave</h4>
+      ${DAY3.checklist.map((c,i)=>`<label><input type="checkbox" ${i<2?'checked':''}><span>${esc(c)}</span></label>`).join('')}
+    </section>
+    <div class="rail">${stops.map((s,i)=>renderStop(s,i,stops.length)).join('')}</div>`;
+
+  updateNow();
+  wire();
+  openPanels();
+  loadImages();
+}
+
+/* ── NOW bar ── */
+function updateNow(){
+  const stops = DAY3.stops, i = state.pos, s = stops[i], nx = stops[i+1];
+  $('#nowAt').textContent = s.title;
+  $('#nowNext').innerHTML = nx
+    ? `Next <b>${esc(nx.title)}</b> · ${esc(nx.drive||'')} · arrive ${esc(nx.time)}`
+    : `Final stop of the day — ${esc(s.kicker)}`;
+  const pct = Math.round((state.done.size/stops.length)*100);
+  $('#progBar').style.width = pct + '%';
+  $('#progTxt').textContent = `${state.done.size} of ${stops.length} stops done`;
+  $('#progRight').textContent = nx ? `${fmtAlt(s.elev)} · climbing` : fmtAlt(s.elev);
+}
+
+/* ── expand / collapse with measured heights ── */
+function openPanels(){
+  document.querySelectorAll('.stop').forEach(st => {
+    const i = +st.dataset.i, w = st.querySelector('.cwrap');
+    w.style.maxHeight = state.open.has(i) ? w.firstElementChild.scrollHeight + 'px' : '0px';
+  });
+}
+function toggle(i){
+  state.open.has(i) ? state.open.delete(i) : state.open.add(i);
+  const st = document.querySelector(`.stop[data-i="${i}"]`);
+  if(state.open.has(i)) st.setAttribute('data-open','1'); else st.removeAttribute('data-open');
+  st.querySelector('.chead').setAttribute('aria-expanded', state.open.has(i));
+  openPanels(); loadImages();
+}
+
+/* ── lazy-load photos only when their panel is open ── */
+function loadImages(){
+  document.querySelectorAll('.cwrap').forEach(w => {
+    if(w.style.maxHeight === '0px') return;
+    w.querySelectorAll('img[data-src]').forEach(im => {
+      im.src = im.dataset.src; im.removeAttribute('data-src');
+      im.onload = () => { im.classList.add('on'); openPanels(); };
+      im.onerror = () => { im.closest('.photo').outerHTML =
+        `<div class="nophoto">${ico('peak')}<span>Photo unavailable offline</span></div>`; };
+    });
+  });
+}
+
+/* ── events ── */
+function wire(){
+  document.querySelectorAll('.chead').forEach(b =>
+    b.onclick = () => toggle(+b.closest('.stop').dataset.i));
+
+  document.querySelectorAll('[data-act]').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    const i = +b.dataset.i, s = DAY3.stops[i];
+    if(b.dataset.act === 'tick'){
+      state.done.has(i) ? state.done.delete(i) : state.done.add(i);
+      render(); toast(state.done.has(i) ? `${s.title} — visited` : `${s.title} — unmarked`);
+    }
+    if(b.dataset.act === 'copy'){
+      const c = `${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}`;
+      navigator.clipboard?.writeText(c).then(()=>toast('Copied ' + c), ()=>toast(c));
+    }
+    if(b.dataset.act === 'nav'){
+      toast('In the app: hands off to Google Maps, or geo: if offline');
+    }
+  });
+
+  document.querySelectorAll('.rdot').forEach(g => {
+    const go = () => { state.pos = +g.dataset.i; $('#sim').value = state.pos; render();
+      document.querySelector(`.stop[data-i="${state.pos}"]`)
+        ?.scrollIntoView({behavior:'smooth', block:'center'}); };
+    g.onclick = go;
+    g.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } };
+  });
+}
+
+$('#sim').oninput = e => {
+  state.pos = +e.target.value;
+  state.done = new Set([...Array(state.pos).keys()]);
+  state.open = new Set([state.pos]);
+  render();
+};
+$('#prevDay').onclick = () => { if(state.day>1){ state.day--; render(); $('#scroll').scrollTop=0; } };
+$('#nextDay').onclick = () => { if(state.day<9){ state.day++; render(); $('#scroll').scrollTop=0; } };
+
+/* theme */
+const savedTheme = localStorage.getItem('gt-theme');
+if(savedTheme) document.documentElement.dataset.theme = savedTheme;
+else if(matchMedia('(prefers-color-scheme:dark)').matches) document.documentElement.dataset.theme='dark';
+$('#themeBtn').onclick = () => {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  document.documentElement.dataset.theme = dark ? 'light' : 'dark';
+  localStorage.setItem('gt-theme', dark ? 'light' : 'dark');
+  render();
+};
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  if(t.dataset.tab === 'days') return;
+  toast({map:'Map tab: full-screen offline MapLibre + live car',
+         food:'Food tab: every restaurant across all 9 days',
+         set:'Settings: offline map download, units, wake lock'}[t.dataset.tab]);
+});
+
+/* clock */
+function tick(){
+  $('#clock').textContent = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+tick(); setInterval(tick, 20000);
+
+render();
+addEventListener('resize', openPanels);
+</script>
+</body>
+</html>

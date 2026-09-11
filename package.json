@@ -1,0 +1,30 @@
+{
+  "name": "georgia-trip-companion",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Offline-first travel PWA for a 9-day Georgia road trip, 26 Sep - 4 Oct 2026",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run data:verify && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "data:coords": "node scripts/verify-coords.mjs",
+    "data:elevation": "node scripts/fetch-elevation.mjs",
+    "data:photos": "node scripts/fetch-photos.mjs",
+    "data:verify": "node scripts/verify-assets.mjs",
+    "data:all": "npm run data:coords && npm run data:elevation && npm run data:photos && npm run data:verify"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "sharp": "^0.35.4",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}
