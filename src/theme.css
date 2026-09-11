@@ -347,9 +347,10 @@ img { display: block; max-width: 100%; }
 .food-item .fb { flex: 1; min-width: 0; }
 .food-item .fn { font-size: 14px; font-weight: 600; display: flex; align-items: baseline;
   gap: 6px; flex-wrap: wrap; }
-.food-item .fp { font-size: 9px; color: var(--enamel); letter-spacing: .16em; line-height: 1;
+/* Tier reads by how many dots there are, so it needs room to be counted at a
+   glance — not opacity, which was indistinguishable at this size. */
+.fp { font-size: 10px; color: var(--enamel); letter-spacing: .22em; line-height: 1;
   white-space: nowrap; cursor: default; }
-.food-item .fp-off { opacity: .22; }
 .food-item .fw { font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; margin-top: 2px; }
 .food-item .fd { font-size: 12px; color: var(--wine); margin-top: 3px; font-weight: 500; }
 .food-item .fd::before { content: "→ "; opacity: .6; }
@@ -481,3 +482,38 @@ img { display: block; max-width: 100%; }
   background: var(--ink); color: var(--paper); font-size: 13px; box-shadow: var(--shadow-lg); }
 .updatebar button { background: var(--terracotta); color: #FFF8EF; font-size: 12.5px;
   font-weight: 700; padding: 7px 13px; border-radius: 99px; }
+
+/* ═════════ food tab ═════════ */
+.foodtab { padding-bottom: 12px; }
+.foodhead { margin: 16px 14px 0; }
+.foodhead h2 { font-size: 21px; }
+.foodhead p { margin: 4px 0 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+.foodfilters { display: flex; gap: 8px; margin: 12px 14px 0; }
+.foodsearch { flex: 1; min-width: 0; min-height: 40px; padding: 0 13px; font: inherit;
+  font-size: 14px; border-radius: 12px; background: var(--paper-2); color: var(--ink);
+  border: 1px solid var(--line-2); }
+.foodsearch::placeholder { color: var(--ink-faint); }
+.pricefilter { display: flex; flex: none; border: 1px solid var(--line-2); border-radius: 12px;
+  overflow: hidden; background: var(--paper-2); }
+.pricefilter button { padding: 0 10px; min-height: 40px; font-size: 9px; letter-spacing: .12em;
+  color: var(--ink-faint); }
+.pricefilter button + button { border-left: 1px solid var(--line); }
+.pricefilter button.on { background: var(--enamel); color: #fff; }
+
+.foodrow { display: flex; gap: 10px; width: 100%; text-align: left; align-items: flex-start;
+  margin: 0 14px 6px; width: calc(100% - 28px); padding: 10px 11px; border-radius: var(--r-sm);
+  background: var(--paper-2); border: 1px solid var(--line); transition: background .15s; }
+.foodrow:hover { background: var(--paper-3); }
+.foodrow .fi { width: 30px; height: 30px; border-radius: 9px; flex: none; display: grid;
+  place-items: center; color: var(--wine);
+  background: color-mix(in srgb, var(--wine) 10%, transparent); }
+.foodrow .fi svg { width: 17px; height: 17px; }
+.foodrow .fb { flex: 1; min-width: 0; display: block; }
+.foodrow .fn { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
+  font-size: 14px; font-weight: 600; }
+.foodrow .fwhere { display: block; font-size: 11px; color: var(--terracotta); font-weight: 600;
+  margin-top: 2px; font-variant-numeric: tabular-nums; }
+.foodrow .fw { display: block; font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; margin-top: 3px; }
+.foodrow .fd { display: block; font-size: 12px; color: var(--wine); font-weight: 500; margin-top: 3px; }
+.foodrow .fd::before { content: "→ "; opacity: .6; }
+.foodrow .chev { align-self: center; transform: rotate(-90deg); }

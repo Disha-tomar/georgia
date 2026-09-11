@@ -3,23 +3,7 @@ import type { Stop } from '../data/types';
 import { elevationOf, fmtAlt, photoOf } from '../lib/stops';
 import { Icon } from './StopIcon';
 import { describeCode, type DayWeather } from '../lib/weather';
-
-/**
- * Price tier as dots, not lari signs.
- *
- * ₾ (U+20BE) is missing from the bundled font subsets and renders as tofu.
- * A system fallback might cover it on some phones, but "might" is not good
- * enough for an app whose whole point is working when nothing else does.
- */
-function PriceTier({ price }: { price: '₾' | '₾₾' | '₾₾₾' }) {
-  const n = price.length;
-  const label = ['', 'cheap', 'mid-range', 'expensive'][n];
-  return (
-    <span className="fp" title={label} aria-label={label}>
-      {'●'.repeat(n)}<span className="fp-off">{'●'.repeat(3 - n)}</span>
-    </span>
-  );
-}
+import { PriceTier } from './PriceTier';
 
 export function StopCard({
   stop, open, isNow, visited, weather, onToggleOpen, onToggleVisited, onToast,

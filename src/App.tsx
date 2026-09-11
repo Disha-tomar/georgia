@@ -12,6 +12,7 @@ import { AltitudeProfile } from './components/AltitudeProfile';
 import { StopCard } from './components/StopCard';
 import { TripMap } from './components/TripMap';
 import { OfflineMapManager } from './components/OfflineMapManager';
+import { FoodList } from './components/FoodList';
 import { useInstallPrompt } from './hooks/useInstallPrompt';
 
 type Tab = 'days' | 'map' | 'food' | 'settings';
@@ -89,6 +90,17 @@ export default function App() {
   const nowStop = nowIdx >= 0 ? day.stops[nowIdx] : null;
   const nextStop = nowCtx?.next ?? null;
   const activeId = nowStop?.id ?? nowCtx?.nearest?.id ?? null;
+
+  /* Jump from the food list to that stop on the rail, opened and scrolled to. */
+  const openStop = useCallback((n: number, stopId: string) => {
+    setDayN(n);
+    setTab('days');
+    setOpenIds(new Set([stopId]));
+    requestAnimationFrame(() => {
+      document.querySelector(`[data-stop="${stopId}"]`)
+        ?.scrollIntoView({ block: 'center' });
+    });
+  }, []);
 
   const goDay = (n: number) => {
     setDayN(n);
@@ -283,6 +295,8 @@ export default function App() {
             ) : (
               tab === 'settings' ? (
                 <Settings geo={geo} wake={wake} weather={weather} />
+              ) : tab === 'food' ? (
+                <FoodList onOpen={openStop} />
               ) : <Placeholder tab={tab} />
             )}
           </div>
