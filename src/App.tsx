@@ -5,13 +5,26 @@ import { useTripProgress } from './hooks/useTripProgress';
 import { Icon } from './components/StopIcon';
 import { AltitudeProfile } from './components/AltitudeProfile';
 import { StopCard } from './components/StopCard';
+import { TripMap } from './components/TripMap';
 
 type Tab = 'days' | 'map' | 'food' | 'settings';
 
+/**
+ * Deep link state in the hash: #/day/3/map
+ * Lets a link point at a specific day and pane, and keeps the back button
+ * meaningful on a phone without pulling in a router.
+ */
+function readHash(): { day?: number; tab?: Tab } {
+  const m = /^#\/day\/(\d)(?:\/(days|map|food|settings))?$/.exec(location.hash);
+  if (!m) return {};
+  return { day: +m[1], tab: (m[2] as Tab) ?? 'days' };
+}
+
 export default function App() {
   const tripDay = currentDayNumber();
-  const [dayN, setDayN] = useState(tripDay ?? 1);
-  const [tab, setTab] = useState<Tab>('days');
+  const initial = readHash();
+  const [dayN, setDayN] = useState(initial.day ?? tripDay ?? 1);
+  const [tab, setTab] = useState<Tab>(initial.tab ?? 'days');
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState('');
   const [clock, setClock] = useState(() => new Date());
@@ -24,6 +37,22 @@ export default function App() {
   useEffect(() => {
     const t = setInterval(() => setClock(new Date()), 30_000);
     return () => clearInterval(t);
+  }, []);
+
+  /* Keep the hash in step, and respond to back/forward. */
+  useEffect(() => {
+    const want = `#/day/${dayN}/${tab}`;
+    if (location.hash !== want) history.replaceState(null, '', want);
+  }, [dayN, tab]);
+
+  useEffect(() => {
+    const onHash = () => {
+      const h = readHash();
+      if (h.day) setDayN(h.day);
+      if (h.tab) setTab(h.tab);
+    };
+    addEventListener('hashchange', onHash);
+    return () => removeEventListener('hashchange', onHash);
   }, []);
 
   const showToast = useCallback((msg: string) => {
@@ -93,6 +122,20 @@ export default function App() {
             </div>
           </header>
 
+          {/* The map fills its pane and manages its own gestures, so it sits
+              outside the scroll container rather than inside it. */}
+          {tab === 'map' ? (
+            <TripMap
+              day={day}
+              stops={day.stops}
+              activeId={nowStop?.id ?? null}
+              visited={visited}
+              onPick={id => {
+                const s = day.stops.find(x => x.id === id);
+                if (s) showToast(`${s.time} · ${s.title}`);
+              }}
+            />
+          ) : (
           <div className="scroll" ref={scrollRef}>
             {tab === 'days' ? (
               <>
@@ -188,6 +231,7 @@ export default function App() {
               <Placeholder tab={tab} />
             )}
           </div>
+          )}
 
           <nav className="tabbar">
             {([

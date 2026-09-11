@@ -6,14 +6,18 @@
   "description": "Offline-first travel PWA for a 9-day Georgia road trip, 26 Sep - 4 Oct 2026",
   "scripts": {
     "dev": "vite",
-    "build": "npm run data:verify && tsc --noEmit && vite build",
+    "build": "npm run data:maplibre && npm run data:verify && tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "data:coords": "node scripts/verify-coords.mjs",
     "data:elevation": "node scripts/fetch-elevation.mjs",
     "data:photos": "node scripts/fetch-photos.mjs",
     "data:verify": "node scripts/verify-assets.mjs",
-    "data:all": "npm run data:coords && npm run data:elevation && npm run data:photos && npm run data:verify"
+    "data:all": "npm run data:coords && npm run data:elevation && npm run data:photos && npm run data:verify",
+    "data:routes": "node scripts/fetch-routes.mjs",
+    "data:region": "node scripts/build-region.mjs",
+    "data:glyphs": "node scripts/fetch-glyphs.mjs",
+    "data:maplibre": "node scripts/copy-maplibre.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
@@ -24,6 +28,8 @@
     "vite": "^8.3.0"
   },
   "dependencies": {
+    "maplibre-gl": "^5.24.0",
+    "pmtiles": "^4.5.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

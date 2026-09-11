@@ -391,3 +391,36 @@ img { display: block; max-width: 100%; }
   padding: 10px 16px; border-radius: 99px; box-shadow: var(--shadow-lg); opacity: 0;
   pointer-events: none; transition: opacity .25s, transform .25s; max-width: 86vw; text-align: center; }
 .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* ═════════ map ═════════ */
+.mapwrap { position: relative; flex: 1; min-height: 0; display: flex; }
+.mapcanvas { position: absolute; inset: 0; }
+.maplegend { position: absolute; left: 10px; bottom: 10px; z-index: 2;
+  font-size: 11px; font-weight: 600; color: var(--ink-soft);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  border: 1px solid var(--line); border-radius: 99px; padding: 5px 11px;
+  backdrop-filter: blur(6px); }
+.maperr { position: absolute; inset: 16px; z-index: 3; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 22px;
+  border-radius: var(--r-lg); background: var(--paper-2); border: 1px dashed var(--line-2); }
+.maperr strong { font-family: Fraunces, serif; font-size: 17px; }
+.maperr span { font-size: 13px; color: var(--ink-soft); line-height: 1.5; max-width: 260px; }
+
+/* numbered stop pins */
+.mpin { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer;
+  background: var(--paper); color: var(--terracotta);
+  border: 2px solid var(--terracotta); box-shadow: 0 2px 6px rgba(0,0,0,.28); }
+.mpin[data-done="1"] { background: var(--enamel); border-color: var(--enamel); color: #fff; }
+.mpin[data-active="1"] { background: var(--saffron); border-color: var(--saffron); color: #3A2A0A;
+  width: 32px; height: 32px; font-size: 13px; z-index: 2;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--saffron) 30%, transparent), 0 2px 6px rgba(0,0,0,.28); }
+
+/* MapLibre chrome, retinted */
+.maplibregl-ctrl-group { border-radius: 11px !important; overflow: hidden;
+  box-shadow: var(--shadow) !important; background: var(--paper) !important; }
+.maplibregl-ctrl-group button { background: var(--paper) !important; }
+.maplibregl-ctrl-group button + button { border-top: 1px solid var(--line) !important; }
+.maplibregl-ctrl-attrib { font-size: 10px !important;
+  background: color-mix(in srgb, var(--paper) 82%, transparent) !important; }
+.maplibregl-ctrl-attrib a { color: var(--ink-faint) !important; }

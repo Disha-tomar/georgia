@@ -65,18 +65,24 @@ img{display:block;max-width:100%}
 :root[data-theme="dark"] .grain{mix-blend-mode:screen}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .grain{mix-blend-mode:screen}}
 
-/* ── device frame on desktop, full bleed on phone ── */
-.stage{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:0}
-.phone{width:100%;max-width:100%;background:var(--paper);position:relative;overflow:hidden;
-  min-height:100dvh;display:flex;flex-direction:column}
+/* ── device frame on desktop, full bleed on phone ──
+   Stage is exactly one viewport tall and the phone fills it, so the column
+   is bounded: .scroll is the only scroller and the tab bar stays pinned. */
+.stage{height:100vh;height:100dvh;overflow:hidden;padding:0;
+  display:flex;align-items:center;justify-content:center}
+.phone{width:100%;max-width:100%;height:100%;background:var(--paper);position:relative;
+  overflow:hidden;display:flex;flex-direction:column}
 @media (min-width:600px){
   .stage{padding:28px 16px;background:
     radial-gradient(1100px 560px at 50% -12%, color-mix(in srgb,var(--terracotta) 13%,transparent), transparent 70%),
     var(--paper-3)}
-  .phone{max-width:412px;min-height:840px;max-height:94dvh;border-radius:38px;
+  .phone{max-width:412px;max-height:880px;border-radius:38px;
     box-shadow:var(--shadow-lg),0 0 0 10px var(--frame),0 0 0 11px var(--frame-hi)}
 }
-.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:26px}
+/* min-height:0 lets this shrink in the flex column rather than pushing the
+   tab bar off-screen */
+.scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;padding-bottom:26px}
 
 /* ═══════════ HEADER ═══════════ */
 .topbar{position:sticky;top:0;z-index:30;background:var(--paper);
@@ -298,7 +304,8 @@ img{display:block;max-width:100%}
 .btn.done:hover{background:var(--enamel)}
 
 /* ═══════════ TABS ═══════════ */
-.tabbar{display:flex;border-top:1px solid var(--line);background:var(--paper);flex:none;z-index:40}
+.tabbar{display:flex;border-top:1px solid var(--line);background:var(--paper);flex:none;z-index:40;
+  padding-bottom:env(safe-area-inset-bottom)}
 .tab{flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:2px;color:var(--ink-faint);font-size:10.5px;font-weight:600;transition:color .15s}
 .tab svg{width:21px;height:21px}

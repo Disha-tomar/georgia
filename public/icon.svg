@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#F4EBDC"/>
+  <!-- Kazbek, and the road that climbs to it -->
+  <path d="M6 48 L24 18 L33 31 L39 23 L58 48 Z" fill="none" stroke="#C86B3C"
+        stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M24 18 L20 25 L28 25 Z" fill="#C86B3C" opacity=".28"/>
+  <path d="M10 56 C22 54 22 46 32 45 C42 44 44 52 56 50" fill="none"
+        stroke="#7B2D26" stroke-width="3" stroke-linecap="round" stroke-dasharray="1.5 5"/>
+  <circle cx="32" cy="45" r="3.6" fill="#E8B64C" stroke="#F4EBDC" stroke-width="2"/>
+</svg>
